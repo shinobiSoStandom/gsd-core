@@ -81,6 +81,11 @@ def build_changes(config_dir, skills_dir):
     skills = catalog("skills.ru.tsv")
     agents = catalog("agents.ru.tsv")
     instructions = (SOURCE / "instructions.ru.md").read_text()
+    directive = ("Отвечать и писать новые документы по-русски; сохранять технические имена и форматы GSD. "
+                 "Не выдавать локальную проверку за публикацию или доставку. "
+                 "Подробные правила проекта читать только для соответствующей задачи, если ещё не загружены: "
+                 + str(config_dir / "gsd-core/references/shinobi-profile-ru.md")
+                 + ". Передавать помощникам только конкретное задание и нужные файлы; не перечитывать всю историю.")
     changes = {}
     counts = {"skills": 0, "agent_files": 0}
     for path in sorted(skills_dir.glob("gsd-*/SKILL.md")):
@@ -89,7 +94,7 @@ def build_changes(config_dir, skills_dir):
             continue  # This skill belongs to the user, not the distribution.
         if key not in skills:
             raise ValueError(f"Новая команда требует перевода: {key}")
-        changes[path] = localize_markdown(path.read_text(), skills[key], instructions)
+        changes[path] = localize_markdown(path.read_text(), skills[key], directive)
         counts["skills"] += 1
     for root in [config_dir / "agents", config_dir / "gsd-core/agents"]:
         for path in sorted(root.glob("gsd-*")):
@@ -99,7 +104,7 @@ def build_changes(config_dir, skills_dir):
             if key not in agents:
                 raise ValueError(f"Новая роль требует перевода: {key}")
             convert = localize_toml if path.suffix == ".toml" else localize_markdown
-            changes[path] = convert(path.read_text(), agents[key], instructions)
+            changes[path] = convert(path.read_text(), agents[key], directive)
             counts["agent_files"] += 1
     if not counts["skills"] or not counts["agent_files"]:
         raise ValueError("Установка не содержит ожидаемых навыков или агентов")

@@ -56,9 +56,14 @@ class ContextTests(unittest.TestCase):
             self.assertFalse((root / ".planning").exists())
             self.assertFalse((root / ".codex").exists())
 
-    def test_non_gsd_subagent_gets_no_extra_context(self):
+    def test_subagent_gets_no_automatic_extra_context(self):
         with tempfile.TemporaryDirectory() as directory:
-            result = HOOK.handle({"cwd": directory, "hook_event_name": "SubagentStart", "agent_type": "worker"}, Path(directory) / "cache")
+            result = HOOK.handle({"cwd": directory, "hook_event_name": "SubagentStart", "agent_type": "gsd-planner"}, Path(directory) / "cache")
+            self.assertIsNone(result)
+
+    def test_empty_project_adds_no_model_context(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = HOOK.handle({"cwd": directory, "hook_event_name": "SessionStart"}, Path(directory) / "cache")
             self.assertIsNone(result)
 
     def test_registration_is_repeatable_and_does_not_write_trust(self):

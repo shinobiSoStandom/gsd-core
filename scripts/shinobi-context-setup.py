@@ -24,13 +24,13 @@ def install(config):
     for event in list(hooks):
         hooks[event] = [group for group in hooks[event] if group.get("hooks")]
     for event, matcher in [("SessionStart", "startup|resume|clear|compact|fork"),
-                           ("SubagentStart", "^gsd-"), ("PreCompact", "manual|auto"), ("Stop", "*")]:
+                           ("PreCompact", "manual|auto"), ("Stop", "*")]:
         handler = {"type": "command", "command": shlex.quote(sys.executable) + " " + shlex.quote(str(target)), "timeout": 3}
-        if event in ["SessionStart", "SubagentStart"]:
-            handler["additionalContextLimit"] = 2000
+        if event == "SessionStart":
+            handler["additionalContextLimit"] = 1200
         hooks.setdefault(event, []).append({"matcher": matcher, "hooks": [handler]})
     filename.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n")
-    return {"script": str(target), "events": 4, "activation": "requires native /hooks review"}
+    return {"script": str(target), "events": 3, "activation": "requires native /hooks review"}
 
 
 def main():

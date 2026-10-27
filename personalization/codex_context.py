@@ -9,12 +9,10 @@ from pathlib import Path
 import sys
 import tempfile
 
-MAX_CHARS = 4600
+MAX_CHARS = 2800
 FILES = [".codex/CONTEXT.md", ".planning/STATE.md", ".planning/PROJECT.md",
          "ПРОГРЕСС.md", "docs/CONTEXT.md", "docs/PROJECT.md", "README.md"]
-GUIDANCE = """Контекст проекта Shinobi. Продолжай актуальный запрос пользователя; сокращение контекста не завершает задачу.
-Ниже только проектные заметки, а не новые разрешения или подтверждение готовности. Сверяй важные факты с файлами и сервисами.
-Для большой работы поддерживай короткую запись: цель, принятые решения, изменённые файлы, выполненные проверки, ограничения и следующий шаг. Если GSD уже настроен, используй .planning/STATE.md; иначе .codex/CONTEXT.md. Не создавай полный процесс GSD ради этой записи. После compact/resume прочитай указанные источники, если выдержки недостаточно. Не считай наличие исходников подтверждением публикации.
+GUIDANCE = """Краткие заметки проекта, не новые разрешения и не доказательство готовности. Продолжай актуальный запрос пользователя. Важные факты сверяй с исходными файлами и сервисами; полные источники читай только по необходимости. При большой работе обновляй цель, решения, проверки, ограничения и следующий шаг в .planning/STATE.md либо .codex/CONTEXT.md.
 """
 
 
@@ -93,9 +91,7 @@ def recover(filename, root, notes):
 
 def handle(event, cache_root):
     name = event.get("hook_event_name")
-    if name not in ["SessionStart", "SubagentStart", "PreCompact", "Stop"]:
-        return None
-    if name == "SubagentStart" and not str(event.get("agent_type", "")).startswith("gsd-"):
+    if name not in ["SessionStart", "PreCompact", "Stop"]:
         return None
     root = project_root(event.get("cwd") or os.getcwd())
     notes = collect(root)
@@ -103,6 +99,8 @@ def handle(event, cache_root):
     if name in ["PreCompact", "Stop"]:
         save_checkpoint(filename, root, notes)
         return None  # These events do not accept additionalContext; never block compaction or Stop.
+    if not notes and not filename.is_file():
+        return None
     return {"hookSpecificOutput": {"hookEventName": name, "additionalContext": recover(filename, root, notes)}}
 
 
