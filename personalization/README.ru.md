@@ -54,4 +54,4 @@ python3 -m unittest discover -s personalization/tests -v
 
 - GitHub: https://github.com/shinobiSoStandom/gsd-core/tree/shinobi-ru
 - Google Диск: https://drive.google.com/drive/folders/1ZLKbv5TE-PghV2ySSNpPbrN_1JI1boA8
-- Notion: страница проекта будет указана после подтверждённого создания.
+- Notion: https://app.notion.com/p/406340c1e91081d3bba1f6aa7de308f4?pvs=204 — описание, выполненные проверки и оставшиеся действия.
