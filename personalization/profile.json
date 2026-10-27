@@ -1,0 +1,10 @@
+{
+  "name": "Shinobi — русский GSD Core",
+  "version": "1.0.0",
+  "upstream_package": "@opengsd/gsd-core",
+  "upstream_version": "1.19.0",
+  "response_language": "ru",
+  "skill_label_prefix": "GSD · ",
+  "fork": "https://github.com/shinobiSoStandom/gsd-core",
+  "upstream": "https://github.com/open-gsd/gsd-core"
+}
